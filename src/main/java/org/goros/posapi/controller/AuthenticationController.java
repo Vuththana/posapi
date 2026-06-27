@@ -37,8 +37,6 @@ public class AuthenticationController implements AuthService {
     private final ModelMapper modelMapper;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;
-
     @PostMapping("/register")
     @Operation(summary = "Register a new user")
     public ResponseEntity<ApiResponse<AppUserResponse>> register(@Valid @RequestBody AppUserRequest request) throws Exception {
@@ -52,7 +50,7 @@ public class AuthenticationController implements AuthService {
     @Operation(summary = "Login user")
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody AuthRequest request) throws Exception {
         authenticate(request.getIdentifier(), request.getPassword());
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getIdentifier());
+        final UserDetails userDetails = appUserService.loadUserByUsername(request.getIdentifier());
         final String token = jwtService.generateToken(userDetails);
         AuthResponse authResponse = new AuthResponse(token);
 
@@ -60,7 +58,7 @@ public class AuthenticationController implements AuthService {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    private  void authenticate(String identifier, String password) throws Exception {
+    private void authenticate(String identifier, String password) throws Exception {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(identifier, password));
         } catch (DisabledException e) {

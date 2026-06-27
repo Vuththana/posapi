@@ -13,8 +13,18 @@ import java.time.Instant;
 public class GlobalExceptionHandler {
     @ExceptionHandler(AlreadyExistsException.class)
     public ProblemDetail handleAlreadyExistsException(AlreadyExistsException ex, HttpServletRequest request) {
-        ProblemDetail detail  = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
         detail.setTitle("CONFLICT");
+        detail.setDetail(ex.getMessage());
+        detail.setInstance(URI.create(request.getRequestURI()));
+        detail.setProperty("timestamp", Instant.now());
+        return detail;
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ProblemDetail handleUserNotFoundException(UserNotFoundException ex, HttpServletRequest request) {
+        ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        detail.setTitle("NOT FOUND");
         detail.setDetail(ex.getMessage());
         detail.setInstance(URI.create(request.getRequestURI()));
         detail.setProperty("timestamp", Instant.now());

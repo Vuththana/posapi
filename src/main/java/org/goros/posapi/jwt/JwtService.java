@@ -3,7 +3,9 @@ package org.goros.posapi.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.goros.posapi.model.entity.AppUser;
+import org.goros.posapi.repository.AppUserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +16,7 @@ import java.util.*;
 import java.util.function.Function;
 
 @Component
+@RequiredArgsConstructor
 public class JwtService {
 
     @Value("${jwt.secret}")
@@ -21,6 +24,7 @@ public class JwtService {
 
     @Value("${jwt.timeout}")
     public static final String SECRET = "FVPr6Q/fVlHGZkElZubC0Zaxv657dPUfDQ4o9DADjSin7+uST1d2A5klMWrMK8fmSl3doyf2wn5zj56VC+qqCg==";
+    private final AppUserRepository appUserRepository;
 
     private String createToken(Map<String, Object> claim, String subject) {
         return Jwts.builder()
@@ -41,7 +45,7 @@ public class JwtService {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        AppUser appUser = (AppUser) userDetails;
+        AppUser appUser = appUserRepository.findByEmailOrUsername(userDetails.getUsername());
 
         claims.put("userId", appUser.getUserId());
         claims.put("email", appUser.getEmail());
