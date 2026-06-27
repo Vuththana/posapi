@@ -2,12 +2,13 @@ package org.goros.posapi.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.goros.posapi.exception.AlreadyExistsException;
+import org.goros.posapi.exception.UserNotFoundException;
 import org.goros.posapi.model.entity.AppUser;
 import org.goros.posapi.model.request.AppUserRequest;
 import org.goros.posapi.repository.AppRoleRepository;
 import org.goros.posapi.repository.AppUserRepository;
 import org.goros.posapi.service.AppUserService;
-import org.jspecify.annotations.NullMarked; 
+import org.jspecify.annotations.NullMarked;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -62,5 +63,26 @@ public class AppUserServiceImpl implements AppUserService {
 
         appUser.setRoleId(ownerRoleId);
         return appUserRepository.save(appUser);
+    }
+
+    @Override
+    public AppUser getUserById(UUID userId) {
+        return appUserRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+    }
+
+    @Override
+    public void deleteUserById(UUID userId) {
+        if(appUserRepository.existsById(userId)) {
+            appUserRepository.deleteById(userId);
+        } else {
+            throw new UserNotFoundException("User not found");
+        }
+    }
+
+    @Override
+    public void updateUserById(UUID userId, AppUserRequest request) {
+        AppUser user = appUserRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+        modelMapper.map(request, user);
+        appUserRepository.save(user);
     }
 }
