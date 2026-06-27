@@ -4,7 +4,9 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
 import org.goros.posapi.model.entity.AppUser;
+import org.goros.posapi.model.request.AppUserRequest;
 import org.goros.posapi.model.response.ApiResponse;
+import org.goros.posapi.model.response.ApiResponseVoid;
 import org.goros.posapi.model.response.AppUserResponse;
 import org.goros.posapi.service.AppUserService;
 import org.goros.posapi.utils.ResponseUtil;
@@ -34,5 +36,18 @@ public class AppUserController {
     public ResponseEntity<ApiResponse<AppUserResponse>> getUserById(@PathVariable("user-id") UUID userId) {
         ApiResponse<AppUserResponse> response = ResponseUtil.success("Users fetched successfully", modelMapper.map(appUserService.getUserById(userId), AppUserResponse.class));
         return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @DeleteMapping("/user/{user-id}")
+    public ResponseEntity<ApiResponseVoid> deleteUserById(@PathVariable("user-id") UUID userId) {
+        appUserService.deleteUserById(userId);
+        ApiResponseVoid response = ResponseUtil.successVoid("User deleted successfully.");
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @PutMapping("/user/{user-id}")
+    public ResponseEntity<ApiResponseVoid> updateUserById(@PathVariable("user-id") UUID userId, @RequestBody AppUserRequest request) {
+        appUserService.updateUserById(userId, request);
+        return null;
     }
 }
