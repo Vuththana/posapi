@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -24,12 +26,16 @@ public class AppUser implements UserDetails {
     private String password;
     private String firstName;
     private String lastName;
-    private UUID roleId;
+
+    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name = "role_id")
+    private AppRole role;
 
 
     @Override
+    @NullMarked
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(new SimpleGrantedAuthority(role.getRoleName()));
     }
 
     @Override

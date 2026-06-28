@@ -20,3 +20,4 @@ CREATE TABLE IF NOT EXISTS app_users(
 );
 
 INSERT INTO app_roles(role_id, role_name) VALUES (gen_random_uuid(),'OWNER');
+INSERT INTO app_roles(role_id, role_name) VALUES (gen_random_uuid(),'STAFF');

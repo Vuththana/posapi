@@ -50,6 +50,7 @@ public class JwtService {
         claims.put("userId", appUser.getUserId());
         claims.put("email", appUser.getEmail());
         claims.put("username", appUser.getUsername());
+        claims.put("role_name", appUser.getRole().getRoleName());
 
         return createToken(claims, appUser.getUsername());
     }

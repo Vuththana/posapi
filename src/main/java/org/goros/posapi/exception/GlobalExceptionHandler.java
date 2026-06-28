@@ -30,4 +30,14 @@ public class GlobalExceptionHandler {
         detail.setProperty("timestamp", Instant.now());
         return detail;
     }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ProblemDetail handleForbiddenException(ForbiddenException ex, HttpServletRequest request) {
+        ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
+        detail.setTitle("UNAUTHORIZED REQUEST");
+        detail.setDetail(ex.getMessage());
+        detail.setInstance(URI.create(request.getRequestURI()));
+        detail.setProperty("timestamp", Instant.now());
+        return detail;
+    }
 }
