@@ -7,6 +7,7 @@ import org.goros.posapi.model.entity.AppUser;
 import org.goros.posapi.model.request.AppUserRequest;
 import org.goros.posapi.repository.AppUserRepository;
 import org.goros.posapi.service.AppUserService;
+import org.goros.posapi.utils.CheckRole;
 import org.jspecify.annotations.NullMarked;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
@@ -31,7 +32,7 @@ public class AppUserServiceImpl implements AppUserService {
         AppUser foundUser = appUserRepository.findByEmailOrUsername(identifier);
 
         if(foundUser == null) {
-            throw new UsernameNotFoundException("Invalid username, email, or password. Please check your credentials and try again.");
+            throw new UsernameNotFoundException("Invalid username, ,email or password. Please check your credentials and try again.");
         }
 
         return User.builder()
@@ -44,8 +45,7 @@ public class AppUserServiceImpl implements AppUserService {
     public List<AppUser> getAllUsers() {
         Authentication authenticated = SecurityContextHolder.getContext().getAuthentication();
         assert authenticated != null;
-        boolean isOwner = appUserRepository.findByEmailOrUsername(authenticated.getName()).getRole().getRoleName().equals("OWNER");
-        if (!isOwner) {
+        if (CheckRole.isSuperAdmin(appUserRepository.findByEmailOrUsername(authenticated.getName()))) {
             throw new ForbiddenException("Unauthorized: You have no access to use this service.");
         }
         return appUserRepository.findAll();
@@ -69,5 +69,14 @@ public class AppUserServiceImpl implements AppUserService {
         AppUser user = appUserRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
         modelMapper.map(request, user);
         appUserRepository.save(user);
+    }
+
+    @Override
+    public void verifyUserById(UUID userId) {
+        if(appUserRepository.existsById(userId)) {
+            appUserRepository.verifyUserById(userId);
+        } else {
+            throw new UserNotFoundException("User not found");
+        }
     }
 }
