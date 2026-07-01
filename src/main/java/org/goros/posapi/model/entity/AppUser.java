@@ -26,6 +26,7 @@ public class AppUser implements UserDetails {
     private String password;
     private String firstName;
     private String lastName;
+    private boolean isVerified;
 
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name = "role_id")

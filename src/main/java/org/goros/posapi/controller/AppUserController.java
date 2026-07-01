@@ -2,8 +2,6 @@ package org.goros.posapi.controller;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
-import org.goros.posapi.model.entity.AppUser;
 import org.goros.posapi.model.request.AppUserRequest;
 import org.goros.posapi.model.response.ApiResponse;
 import org.goros.posapi.model.response.ApiResponseVoid;
@@ -48,6 +46,14 @@ public class AppUserController {
     @PutMapping("/user/{user-id}")
     public ResponseEntity<ApiResponseVoid> updateUserById(@PathVariable("user-id") UUID userId, @RequestBody AppUserRequest request) {
         appUserService.updateUserById(userId, request);
-        return null;
+        ApiResponseVoid response = ResponseUtil.successVoid("User updated successfully");
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @PatchMapping("/user/{user-id}")
+    public ResponseEntity<ApiResponseVoid> verifyUserById(@PathVariable("user-id") UUID userId) {
+        appUserService.verifyUserById(userId);
+        ApiResponseVoid response = ResponseUtil.successVoid("User verified successfully");
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 }

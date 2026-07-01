@@ -12,4 +12,5 @@ public interface AppUserService extends UserDetailsService {
     AppUser getUserById(UUID userId);
     void deleteUserById(UUID userId);
     void updateUserById(UUID userId, AppUserRequest appUserRequest);
+    void verifyUserById(UUID userId);
 }
